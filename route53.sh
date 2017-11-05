@@ -12,17 +12,24 @@
 import os
 import sys
 import boto3
+import json
 from time import sleep
 
-if 'LE_HOSTED_ZONE' not in os.environ:
-    raise Exception("Environment variable LE_HOSTED_ZONE not defined")
-
-if 'LE_AWS_PROFILE' not in os.environ:
-    raise Exception("Environment variable LE_AWS_PROFILE not defined")
-
 # declaring variables
-aws_profile = os.environ['LE_AWS_PROFILE']
-hosted_zone_id = os.environ['LE_HOSTED_ZONE']
+aws_profile = ""
+hosted_zone_id = ""
+
+# Check if environment variables exist
+if ('LE_HOSTED_ZONE' not in os.environ) and ('LE_AWS_PROFILE' not in os.environ):
+    # Read config file to determine profile and zone
+    with open('route53.json') as config_file:    
+        data = json.load(config_file)
+        hosted_zone_id = data['LE_HOSTED_ZONE']
+        aws_profile = data['LE_AWS_PROFILE']
+else:
+    # Environment variables exist, use those for configuration
+    aws_profile = os.environ['LE_AWS_PROFILE']
+    hosted_zone_id = os.environ['LE_HOSTED_ZONE']
 
 def setup_dns(domain, txt_challenge):
     global aws_profile
