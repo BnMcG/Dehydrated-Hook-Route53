@@ -21,8 +21,9 @@ hosted_zone_id = ""
 
 # Check if environment variables exist
 if ('LE_HOSTED_ZONE' not in os.environ) and ('LE_AWS_PROFILE' not in os.environ):
+    script_location = os.path.dirname(os.path.realpath(sys.argv[0]))
     # Read config file to determine profile and zone
-    with open('route53.json') as config_file:    
+    with open(script_location + '/route53.json') as config_file:    
         data = json.load(config_file)
         hosted_zone_id = data['LE_HOSTED_ZONE']
         aws_profile = data['LE_AWS_PROFILE']
